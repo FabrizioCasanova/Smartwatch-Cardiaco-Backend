@@ -16,7 +16,7 @@ const io = new Server(server, {
   },
 });
 
-// Definir el puerto (por ejemplo, 5000)
+// Definir el puerto (por ejemplo, 8080)
 const port = process.env.PORT || 8080;
 // Conectar con Event Hub
 const consumerClient = new EventHubConsumerClient(
@@ -41,7 +41,11 @@ const receiveMessages = async () => {
 
 receiveMessages();
 
-
 server.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
+app.get("/", (req, res) => {
+  res.send("Backend funcionando correctamente!");
+});
+
