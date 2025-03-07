@@ -17,7 +17,7 @@ const io = new Server(server, {
 });
 
 // Definir el puerto (por ejemplo, 5000)
-const port = 6548;
+const port = process.env.PORT || 8080;
 // Conectar con Event Hub
 const consumerClient = new EventHubConsumerClient(
   consumerGroup,
