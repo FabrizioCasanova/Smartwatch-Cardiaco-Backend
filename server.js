@@ -1,11 +1,20 @@
+//Codigo con Mongo
+
+
+/*
 const { EventHubConsumerClient } = require("@azure/event-hubs");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const connectDB = require("./db"); // Conexión a MongoDB
+const HeartRate = require("./models/heartRate"); // Importa el modelo
 
-const connectionString = "Endpoint=sb://ihsuprodcqres003dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=TDCOtPe1e4iJNh68VwQFbP98tCPoGQzc3AIoTOzpGtY=;EntityPath=iothub-ehub-relojintel-57120644-4756147146"; // Tu conexión de Event Hub
+// Conectar a MongoDB Atlas
+connectDB();
+
+const connectionString = "Endpoint=sb://ihsuprodcqres003dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=TDCOtPe1e4iJNh68VwQFbP98tCPoGQzc3AIoTOzpGtY=;EntityPath=iothub-ehub-relojintel-57120644-4756147146";
 const eventHubName = "iothub-ehub-relojintel-57120644-4756147146";
-const consumerGroup = "$Default"; // Nombre del grupo de consumidores (por defecto)
+const consumerGroup = "$Default";
 
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +24,99 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   },
 });
+
+// Definir el puerto
+const port = process.env.PORT || 8080;
+
+// Conectar con Event Hub
+const consumerClient = new EventHubConsumerClient(
+  consumerGroup,
+  connectionString,
+  eventHubName
+);
+
+const receiveMessages = async () => {
+  consumerClient.subscribe({
+    processEvents: async (events, context) => {
+      for (const event of events) {
+        console.log("Mensaje recibido:", event.body);
+        
+        // Guardar en MongoDB
+        try {
+          const newEntry = new HeartRate(event.body);
+          await newEntry.save();
+          console.log("✅ Datos guardados en MongoDB");
+        } catch (error) {
+          console.error("❌ Error guardando en MongoDB:", error.message);
+        }
+
+        // Enviar datos en tiempo real a React
+        io.emit("newData", event.body);
+      }
+    },
+    processError: async (err, context) => {
+      console.error("Error en Event Hub:", err.message);
+    },
+  });
+};
+
+receiveMessages();
+
+server.listen(port, () => {
+  console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("Backend funcionando correctamente!");
+});
+*/
+
+
+
+
+//Codigo sin Mongo
+
+const { EventHubConsumerClient } = require("@azure/event-hubs");
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+
+const connectionString = "Endpoint=sb://ihsuprodcqres003dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=TDCOtPe1e4iJNh68VwQFbP98tCPoGQzc3AIoTOzpGtY=;EntityPath=iothub-ehub-relojintel-57120644-4756147146"; // Tu conexión de Event Hub
+const eventHubName = "iothub-ehub-relojintel-57120644-4756147146";
+const consumerGroup = "$Default"; // Nombre del grupo de consumidores (por defecto)
+
+
+const app = express();
+const server = http.createServer(app);
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://smartwach-cardiaco-backend-b7hsf9b8a4fwhadt.brazilsouth-01.azurewebsites.net/" // Agregá la URL de producción
+];
+
+const io = new Server(server, {
+  cors: {
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("No permitido por CORS"));
+      }
+    },
+    methods: ["GET", "POST"]
+  }
+});
+
+/*
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    methods: ["GET", "POST"]
+  },
+});*/
+
+
 
 // Definir el puerto (por ejemplo, 8080)
 const port = process.env.PORT || 8080;
@@ -41,11 +143,16 @@ const receiveMessages = async () => {
 
 receiveMessages();
 
+/*
 server.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
+});*/
+
+server.listen(port, () => {
+  console.log(`🚀 Servidor corriendo en el puerto ${port}`);
 });
+
 
 app.get("/", (req, res) => {
-  res.send("Backend funcionando correctamente!");
+  res.send("<h1>🚀 Backend del Smartwatch Cardiaco está funcionando! 🔥</h1>");
 });
-
