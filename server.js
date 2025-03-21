@@ -148,11 +148,20 @@ server.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });*/
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Servidor corriendo en el puerto ${port}`);
 });
 
 
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get("/", (req, res) => {
   res.send("<h1>🚀 Backend del Smartwatch Cardiaco está funcionando! 🔥</h1>");
+});
+
+// Middleware para manejar rutas inexistentes
+app.use((req, res) => {
+  res.status(404).send("❌ Ruta no encontrada en el backend.");
 });
