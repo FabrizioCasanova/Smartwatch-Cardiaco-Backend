@@ -83,7 +83,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("<h1>🚀 Backend del Smartwatch Cardiaco está funcionando! 🔥</h1>");
+  res.send("<h1>🚀 Backend del Smartwatch Cardiaco está funcionando perfectamente! 🔥</h1>");
 });
 
 // Middleware para manejar rutas inexistentes
