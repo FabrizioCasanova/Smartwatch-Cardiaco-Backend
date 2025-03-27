@@ -21,7 +21,8 @@ const server = http.createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://smartwach-cardiaco-backend-b7hsf9b8a4fwhadt.brazilsouth-01.azurewebsites.net/"
+  "https://smartwach-cardiaco-backend-b7hsf9b8a4fwhadt.brazilsouth-01.azurewebsites.net/",
+  "https://polite-tree-0e598710f.6.azurestaticapps.net/"
 ];
 
 const io = new Server(server, {
@@ -90,86 +91,3 @@ app.get("/", (req, res) => {
 app.use((req, res) => {
   res.status(404).send("❌ Ruta no encontrada en el backend.");
 });
-
-
-//Codigo sin Mongo
-
-/*
-
-const { EventHubConsumerClient } = require("@azure/event-hubs");
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-
-const connectionString = "Endpoint=sb://ihsuprodcqres003dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=TDCOtPe1e4iJNh68VwQFbP98tCPoGQzc3AIoTOzpGtY=;EntityPath=iothub-ehub-relojintel-57120644-4756147146"; // Tu conexión de Event Hub
-const eventHubName = "iothub-ehub-relojintel-57120644-4756147146";
-const consumerGroup = "$Default"; // Nombre del grupo de consumidores (por defecto)
-
-
-const app = express();
-const server = http.createServer(app);
-
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://smartwach-cardiaco-backend-b7hsf9b8a4fwhadt.brazilsouth-01.azurewebsites.net/" // Agregá la URL de producción
-];
-
-const io = new Server(server, {
-  cors: {
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("No permitido por CORS"));
-      }
-    },
-    methods: ["GET", "POST"]
-  }
-});
-
-
-// Definir el puerto (por ejemplo, 8080)
-const port = process.env.PORT || 8080;
-// Conectar con Event Hub
-const consumerClient = new EventHubConsumerClient(
-  consumerGroup,
-  connectionString,
-  eventHubName
-);
-
-const receiveMessages = async () => {
-  consumerClient.subscribe({
-    processEvents: async (events, context) => {
-      for (const event of events) {
-        console.log("Mensaje recibido:", event.body);
-        io.emit("newData", event.body); // Enviar datos a React en tiempo real
-      }
-    },
-    processError: async (err, context) => {
-      console.error("Error en Event Hub:", err.message);
-    },
-  });
-};
-
-receiveMessages();
-
-server.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 Servidor corriendo en el puerto ${port}`);
-});
-
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get("/", (req, res) => {
-  res.send("<h1>🚀 Backend del Smartwatch Cardiaco está funcionando! 🔥</h1>");
-});
-
-// Middleware para manejar rutas inexistentes
-app.use((req, res) => {
-  res.status(404).send("❌ Ruta no encontrada en el backend.");
-});
-
-*/
