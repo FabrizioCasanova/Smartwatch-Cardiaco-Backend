@@ -22,7 +22,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://smartwach-cardiaco-backend-b7hsf9b8a4fwhadt.brazilsouth-01.azurewebsites.net/",
-  "https://polite-tree-0e598710f.6.azurestaticapps.net/"
+  "https://delightful-wave-022f57e0f.6.azurestaticapps.net"
 ];
 
 const io = new Server(server, {
