@@ -27,16 +27,11 @@ const allowedOrigins = [
 
 const io = new Server(server, {
   cors: {
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("No permitido por CORS"));
-      }
-    },
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
+
 
 // Definir el puerto
 const port = process.env.PORT || 8080;
